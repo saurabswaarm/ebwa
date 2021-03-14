@@ -1,10 +1,12 @@
+import { Link } from "react-router-dom";
+
 function AppBar() {
   return (
     <nav className="navbar navbar-dark bg-dark">
       <div className="container-fluid">
-        <a className="navbar-brand" href="#">
+        <Link className="navbar-brand" to="/">
           EBWA
-        </a>
+        </Link>
         <button
           className="navbar-toggler"
           type="button"
@@ -19,14 +21,14 @@ function AppBar() {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
             <li className="nav-item">
-              <a className="nav-link active" aria-current="page" href="#">
+              <a className="nav-link active" aria-current="page" href="/">
                 Log Out
               </a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#">
+              <Link className="nav-link" to="/auth/changepassword">
                 Change Password
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

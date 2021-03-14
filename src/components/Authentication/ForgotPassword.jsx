@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function ForgotPassword() {
   return (
@@ -16,7 +17,7 @@ function ForgotPassword() {
           required
         />
 
-        <button className="btn btn-info mt-4">Change Passsword</button>
+        <Link to="/auth/resetforgotpassword" className="btn btn-info mt-4">Request Password Change Link</Link>
       </form>
     </div>
   );

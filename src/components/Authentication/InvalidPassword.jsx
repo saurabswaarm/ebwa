@@ -1,4 +1,5 @@
 import React from "react";
+import LoginModule from "./LoginModule";
 
 function InvalidPassword() {
   return (
@@ -9,21 +10,7 @@ function InvalidPassword() {
         typed it correctly. If you have forgotten it please request a new
         password.
       </p>
-      <form className="p-2 d-flex flex-column align-items-center">
-        <input
-          className="form-control my-2"
-          type="email"
-          placeholder="email"
-          required
-        />
-        <input
-          className="form-control my-2"
-          type="password"
-          placeholder="password"
-          required
-        />
-        <button className="btn btn-info mt-4">Login</button>
-      </form>
+     <LoginModule/> 
     </div>
   );
 }

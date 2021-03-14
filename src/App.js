@@ -1,16 +1,14 @@
-import MainFeed from "./components/NoticeBoard/MainFeed/MainFeed";
-import CurrentUser from "./components/NoticeBoard/CurrentUser/CurrentUser";
 import AppWrapper from "./components/AppWrapper"
 import AppBar from "./components/AppBar/AppBar";
-import CreateAccount from "./components/Authentication/CreateAccount";
 import Authentication from './components/Authentication/Authentication';
+import Welcome from './components/Welcome';
 
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
+import NoticeBoard from "./components/NoticeBoard/NoticeBoard";
 
 
 
@@ -24,11 +22,15 @@ function App() {
             <Authentication />
           </Route>
 
+          <Route path="/noticeboard">
+            <NoticeBoard/>
+          </Route>
+
+          <Route path="/">
+            <Welcome/>
+          </Route>
 
         </Switch>
-        <CreateAccount/>
-        {/* <CurrentUser />
-        <MainFeed/> */}
       </AppWrapper>
     </Router>
   )
