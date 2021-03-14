@@ -1,4 +1,7 @@
-require('dotenv').config()
+if(process.env.BUILD == "development"){
+  require('dotenv').config()
+}
+
 
 let path = require("path");
 let express = require("express");
