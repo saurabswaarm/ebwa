@@ -46,6 +46,6 @@ app.get('/*', function (req, res) {
 
 
 // start express server on port 5000
-app.listen(80, () => {
-  console.log("server started on port " + 80);
+app.listen(3004, () => {
+  console.log("server started on port 3004");
 }); 
