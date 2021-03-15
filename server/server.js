@@ -14,6 +14,7 @@ const authApiRouter = require('./routes/authapi');
 let passport = require('passport');
 let session = require('express-session');
 let MongoStore = require('connect-mongo'); // refer https://www.npmjs.com/package/connect-mongo
+let bcrypt = require('bcrypt');
 let cookieParser = require('cookie-parser');
 
 const mongoose = require('mongoose');
