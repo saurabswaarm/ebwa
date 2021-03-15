@@ -46,11 +46,6 @@ app.get('/*', function (req, res) {
 
 
 // start express server on port 5000
-<<<<<<< HEAD
 app.listen(3004, () => {
   console.log("server started on port 3004");
-=======
-app.listen(80, () => {
-  console.log("server started on port 80");
->>>>>>> 2396a56d5bc2c8c2e38b130f1b4c62f634c0b6ad
 }); 
