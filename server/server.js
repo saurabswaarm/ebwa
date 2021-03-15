@@ -1,6 +1,6 @@
-// if(process.env.BUILD == "development"){
-//   require('dotenv').config()
-// }
+if(process.env.BUILD == "development"){
+  require('dotenv').config()
+}
 
 
 let path = require("path");
@@ -18,7 +18,7 @@ let bcrypt = require('bcrypt');
 let cookieParser = require('cookie-parser');
 
 const mongoose = require('mongoose');
-mongoose.connect("mongodb+srv://saurab:13devmonkey@ebwa.malq8.mongodb.net/ebwadb?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(process.env.DBURI, {useNewUrlParser: true, useUnifiedTopology: true});
 
 
 
@@ -46,6 +46,6 @@ app.get('/*', function (req, res) {
 
 
 // start express server on port 5000
-app.listen(3004, () => {
-  console.log("server started on port 3004");
+app.listen(process.env.PORTNO, () => {
+  console.log("server started on port" + process.env.PORTNO);
 }); 
