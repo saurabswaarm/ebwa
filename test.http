@@ -1,0 +1,6 @@
+POST http://localhost:3005/api/auth/createaccount
+Content-Type: application/json
+
+{
+    "email":"saurabsalhotra@gmail.com"
+}

@@ -4,7 +4,7 @@ if(process.env.BUILD == "development"){
 }
 
 let path = require("path");
-let express = require("express");
+import express from 'express';
 let app = express();
 
 // 🔶 Routes 🔶
@@ -38,12 +38,12 @@ app.use(session({
 
 
 
-app.get('/', function (req, res) {
+app.get('/', function (req:express.Request, res:express.Response) {
   console.log('Frontend route fired');
   res.sendFile(path.join(__dirname, "..", 'build', 'index.html'));
 });
 
-app.get('/f/*', function (req, res) {
+app.get('/f/*', function (req:express.Request, res:express.Response) {
   console.log('Frontend route fired');
   res.sendFile(path.join(__dirname, "..", 'build', 'index.html'));
 });

@@ -1,13 +1,13 @@
-const express = require('express');
+import express from 'express';
 const authApiRouter = express.Router();
-const User = require('../userSchema');
+import User from '../userSchema';
 
 const sendMail = require('../mailerModule');
 
 
 
 
-authApiRouter.post('/createaccount', async function (req, res) {
+authApiRouter.post('/createaccount', async function (req:express.Request, res:express.Response) {
   try {
 
     let user = await User.findOne({ email: req.body.email }).exec();
@@ -30,7 +30,7 @@ authApiRouter.post('/createaccount', async function (req, res) {
           console.log(info);
         console.groupEnd();
 
-        if(info.accepted.includes(email)) {
+        if(info.accepted.includes(req.body.eamil)) {
           res.redirect('/f/auth/login');
         } else {
           res.redirect('/f/error');

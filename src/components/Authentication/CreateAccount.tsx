@@ -15,9 +15,9 @@ function CreateAccount() {
       },
       // redirect: "follow", // manual, *follow, error
       // referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-      body: {
+      body:JSON.stringify({
         email: "saurab@gmail.com",
-      },
+      })
     });
   }
 
@@ -37,7 +37,7 @@ function CreateAccount() {
       </form>
       <hr className="my-3" />
       <h1 className="mt-4">Already Have an account?</h1>
-      <Link to="/auth/login/" className="btn btn-info mt-2 align-self-center">
+      <Link to="/f/auth/login/" className="btn btn-info mt-2 align-self-center">
         Login
       </Link>
     </div>

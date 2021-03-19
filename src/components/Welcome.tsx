@@ -8,12 +8,12 @@ function CreateAccount() {
         <p className="fs-4">
           If this is your first time here, please claim your account.
         </p>
-        <Link to="/auth/createaccount" className="btn btn-info mt-2 align-self-center">
+        <Link to="/f/auth/createaccount" className="btn btn-info mt-2 align-self-center">
           Claim Account
         </Link>
         <hr className="my-3" />
         <h1 className="mt-4">Already Have an account?</h1>
-        <Link to="/auth/login" className="btn btn-info mt-2 align-self-center">
+        <Link to="/f/auth/login" className="btn btn-info mt-2 align-self-center">
           LogIn
         </Link>
       </div>

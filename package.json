@@ -6,6 +6,12 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.7.3",
+    "@types/express": "^4.17.11",
+    "@types/jest": "^26.0.21",
+    "@types/node": "^14.14.35",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.2",
+    "@types/react-router-dom": "^5.1.7",
     "bcrypt": "^5.0.1",
     "bluebird": "^3.7.2",
     "connect-mongo": "3.2.0",
@@ -26,8 +32,9 @@
     "web-vitals": "^1.1.0"
   },
   "scripts": {
-    "start": "node server/server.js",
-    "dev-start-server": "BUILD=development nodemon server/server BUILD=development",
+    "start": "node server-dist/server.js",
+    "dev-watch-ts": "cd ./server && tsc --watch",
+    "dev-start-server": "BUILD=development nodemon server-dist/server",
     "dev-start-cra-server": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -52,6 +59,7 @@
     ]
   },
   "devDependencies": {
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "typescript": "^4.2.3"
   }
 }

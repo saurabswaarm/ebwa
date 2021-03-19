@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from 'react-router-dom';
 
 function AccountCreated() {
   return (
@@ -11,6 +12,9 @@ function AccountCreated() {
       <p className="fs-4 px-4">
         We have emailed you a password that you may use to login to the portal.
       </p>
+      <Link to="/f/auth/login" className="btn btn-info mt-2 align-self-center">
+          LogIn
+     </Link>
     </div>
   );
 }

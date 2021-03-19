@@ -17,7 +17,7 @@ function ForgotPassword() {
           required
         />
 
-        <Link to="/auth/resetforgotpassword" className="btn btn-info mt-4">Request Password Change Link</Link>
+        <Link to="/f/auth/resetforgotpassword" className="btn btn-info mt-4">Request Password Change Link</Link>
       </form>
     </div>
   );
