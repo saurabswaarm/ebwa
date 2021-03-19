@@ -18,43 +18,43 @@ import PasswordChanged from "./PasswordChanged";
       return (
           <Switch>
 
-              <Route path="/auth/accountcreated">
+              <Route path="/f/auth/accountcreated">
                   <AccountCreated/>
               </Route>
 
-              <Route path="/auth/createaccount">
+              <Route path="/f/auth/createaccount">
                 <CreateAccount/>
               </Route>
 
-              <Route path="/auth/noinvite">
+              <Route path="/f/auth/noinvite">
                 <NoInvite/>
               </Route>
 
-              <Route path="/auth/accountalreadyexists">
+              <Route path="/f/auth/accountalreadyexists">
                 <AccountAlreadyExists/>
               </Route>
 
-              <Route path="/auth/login">
+              <Route path="/f/auth/login">
                 <Login/>
               </Route>
 
-              <Route path="/auth/invalidpassword">
+              <Route path="/f/auth/invalidpassword">
                 <InvalidPassword/>
               </Route>
 
-              <Route path="/auth/forgotpassword">
+              <Route path="/f/auth/forgotpassword">
                 <ForgotPassword/>
               </Route>
 
-              <Route path="/auth/resetforgotpassword">
+              <Route path="/f/auth/resetforgotpassword">
                 <ResetForgotPassword/>
               </Route>
 
-              <Route path="/auth/changepassword">
+              <Route path="/f/auth/changepassword">
                 <ChangePassword/>
               </Route>
 
-              <Route path="/auth/passwordChanged">
+              <Route path="/f/auth/passwordChanged">
                 <PasswordChanged/>
               </Route>
               

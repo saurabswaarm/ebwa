@@ -1,7 +1,7 @@
 if(process.env.BUILD == "development"){
-  require('dotenv').config()
+  console.log('Development Environment Variables Set');
+  require('dotenv').config();
 }
-
 
 let path = require("path");
 let express = require("express");
@@ -13,39 +13,47 @@ const authApiRouter = require('./routes/authapi');
 
 let passport = require('passport');
 let session = require('express-session');
-let MongoStore = require('connect-mongo'); // refer https://www.npmjs.com/package/connect-mongo
+let MongoStore = require('connect-mongo')(session); // refer https://www.npmjs.com/package/connect-mongo
 let bcrypt = require('bcrypt');
-let cookieParser = require('cookie-parser');
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DBURI, {useNewUrlParser: true, useUnifiedTopology: true});
-
-
-
 const mdb = mongoose.connection;
 mdb.on('error', console.error.bind(console, 'connection error:'));
 mdb.once('open', function() {
   console.log('mongodb is connected');
 });
 
-
-
 app.use(express.static(path.join(__dirname, "..", "build")));
 app.use(express.json());
-app.use(express.urlencoded({extended:false}))
+app.use(express.urlencoded({extended:false}));
+app.use(session({
+  name:'session-id-saurab',
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store:new MongoStore({mongooseConnection:mongoose.connection})
+}));
 
 
 
 
-app.use('/api/auth', authApiRouter)
-
-
-app.get('/*', function (req, res) {
+app.get('/', function (req, res) {
+  console.log('Frontend route fired');
   res.sendFile(path.join(__dirname, "..", 'build', 'index.html'));
 });
+
+app.get('/f/*', function (req, res) {
+  console.log('Frontend route fired');
+  res.sendFile(path.join(__dirname, "..", 'build', 'index.html'));
+});
+
+app.use('/api/auth', authApiRouter);
 
 
 // start express server on port 5000
 app.listen(process.env.PORTNO, () => {
-  console.log("server started on port" + process.env.PORTNO);
+  console.log("server started on port " + process.env.PORTNO);
 }); 
+
+module.exports = {mongoose}
