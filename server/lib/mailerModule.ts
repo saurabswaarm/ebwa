@@ -1,5 +1,4 @@
-const nodemailer = require('nodemailer');
-let BluebirdPromise = require('bluebird');
+import nodemailer from 'nodemailer';
 
 let transporter = nodemailer.createTransport({
   service:"gmail",
@@ -8,8 +7,6 @@ let transporter = nodemailer.createTransport({
       pass:process.env.EMAILPASS
   }
 })
-
-let sendMailAsync = BluebirdPromise.promisify(transporter.sendMail);
 
 async function sendMail(email:String, sub:String, msg:String) {
     let mail = {
@@ -20,15 +17,15 @@ async function sendMail(email:String, sub:String, msg:String) {
     };
 
     try {
-        let info = await sendMailAsync(mail);
-        console.log(info);
-        return true;
+        let info = await transporter.sendMail(mail);
+        return info;
     } catch(err) {
+        console.log(err);
         return false;
     }
 
 }
 
-module.exports = sendMail;
+export default sendMail;
 
 

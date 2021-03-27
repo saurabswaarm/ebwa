@@ -1,57 +1,92 @@
 import express from 'express';
 const authApiRouter = express.Router();
-import User from '../userSchema';
+import User, { IUser } from '../schema/userSchema';
+import { EbwaError } from '../middleware/errorHandler';
+// import logger from '../logger';
+import passport from 'passport';
 
-const sendMail = require('../mailerModule');
+import sendMail from '../lib/mailerModule';
+import { isLogInNecessary } from '../middleware/authMiddleware';
 
-
-
-
-authApiRouter.post('/createaccount', async function (req:express.Request, res:express.Response) {
+authApiRouter.post('/createaccount', async function (req: express.Request, res: express.Response, next: express.NextFunction) {
+  // logger('boop');
   try {
 
-    let user = await User.findOne({ email: req.body.email }).exec();
+    let user:IUser = await User.findOne({ email: req.body.email }).exec();
 
     if (user) {
 
-      if(user.activated){
-        res.json({
-          errorCode: 2,
-          error:'User already exists.'
-        });
+      if (user.activated) {
+        next(new EbwaError('User already activated, please login', 200, 2, '/login'))
       } else {
 
-        let [password, passHash] = await user.activateAccount()
-        let message = 'Your EBWA portal password is '+ password;
+        try {
+          let [password, passHash] = await user.activateAccount()
+          let message = 'Your EBWA portal password is ' + password;
+          let activatedUser = await user.save();
 
-        let info = await sendMail(req.body.email, "Welcome to EBWA", message);
-        
-        console.group('Mail Response')
-          console.log(info);
-        console.groupEnd();
-
-        if(info.accepted.includes(req.body.eamil)) {
-          res.redirect('/f/auth/login');
-        } else {
-          res.redirect('/f/error');
+          if (password && activatedUser) {
+            let info = await sendMail(req.body.email, "Welcome to EBWA", message);
+            console.log(info);
+            res.json({
+              code: 1,
+              payload: {
+                message: 'Account details have been mailled to '+ info.accepted[0],
+                redirect: '/login'
+              }
+            })
+          }
+        } catch (err) {
+          user.activated = false;
+          await user.save();
+          next(new EbwaError('Failled to generate a password or send mail, reverting user to inactive, please try again or contant sys admin.', 500, 500));
         }
-        
+
       }
 
     } else {
-      res.json({
-        errorCode: 1,
-        error: 'User not Found'
-      })
+      next(new EbwaError('User not found, we have not yet received or processed your records.', 200, 455));
     }
 
   } catch (err) {
-    res.json({
-      errorCode:500,
-      error:'Server Error',
-      errorMessage: err.message
-    });
+    console.log(err);
+    next(new EbwaError(err.message, 500, 500));
   }
 });
 
-module.exports = authApiRouter
+authApiRouter.post('/login', isLogInNecessary, (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  passport.authenticate('local', function (err, user, info) {
+    if (err) { return next(err) }
+    if (!user) {
+      return next(new EbwaError(info, 401, 401))
+    }
+    req.logIn(user, function (err) {
+      if (err) { return next(err) }
+      return res.json({
+        code:2,
+        payload:{
+          user
+        }
+      });
+    })
+  })(req, res, next);
+
+});
+
+authApiRouter.post('/logout', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  let user = <IUser>req.user!;
+  req.session.destroy((err) => {
+    if (err) { return next(err) }
+    res.clearCookie('session-ebwa');
+    req.logOut();
+    res.json({
+      code:3,
+      payload:{
+        userEmail:user.email
+      }
+    })
+  });
+})
+
+
+export default authApiRouter

@@ -65,6 +65,7 @@ userSchema.methods.activateAccount = function () {
                 case 2:
                     passHash = _a.sent();
                     this.passHash = passHash ? passHash : this.passHash;
+                    this.activated = true;
                     return [2 /*return*/, [password, passHash]];
                 case 3:
                     err_1 = _a.sent();

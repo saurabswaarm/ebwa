@@ -1,24 +1,44 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, {useState} from "react";
+import { Link, useHistory} from "react-router-dom";
 
 function CreateAccount() {
-  function handleClaimAccount(e) {
+
+  let [email, setEmail] = useState('');
+  let history = useHistory();
+
+
+
+  async function handleClaimAccount(e:React.SyntheticEvent) {
     e.preventDefault();
-    fetch("http://localhost/api/auth/createaccount", {
-      method: "POST", // *GET, POST, PUT, DELETE, etc.
-     
-      // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      // credentials: "same-origin", // include, *same-origin, omit
+    console.log(email + ' is being claimed');
+
+    let response:Response = await fetch("http://localhost:3006/api/auth/createaccount", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       },
-      // redirect: "follow", // manual, *follow, error
-      // referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
       body:JSON.stringify({
-        email: "saurab@gmail.com",
+        "email": email,
       })
     });
+
+    let responseJ = await response.json();
+
+    if(responseJ.code == 1){
+      history.push('/f/auth/accountcreated');
+    } else if( responseJ.code == 456){
+      history.push('/f/auth/login');
+    } else if( responseJ.code == 455) {
+      history.push('/f/auth/noinvite')
+    }else {
+      history.push('/f/error');
+    }
+
+
+  }
+
+  function handleInput(e:React.BaseSyntheticEvent){
+    setEmail(e.currentTarget.value);
   }
 
   return (
@@ -30,7 +50,7 @@ function CreateAccount() {
         login to this portal
       </p>
       <form className="p-2 d-flex flex-column align-items-center">
-        <input className="form-control" type="email" placeholder="email" />
+        <input className="form-control" type="email" placeholder="email" value={email} onChange={handleInput}/>
         <button onClick={handleClaimAccount} className="btn btn-info mt-4">
           Claim Account
         </button>

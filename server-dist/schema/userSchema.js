@@ -39,40 +39,55 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var nodemailer_1 = __importDefault(require("nodemailer"));
-var transporter = nodemailer_1.default.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAILADDRESS,
-        pass: process.env.EMAILPASS
-    }
+var mongoose_1 = __importDefault(require("mongoose"));
+var genpass = require('generate-password');
+var bcrypt = require('bcrypt');
+var userSchema = new mongoose_1.default.Schema({
+    email: { type: String, index: true },
+    phone: { type: Number, index: true },
+    name: { type: String },
+    activated: { type: Boolean },
+    cid: { type: String, index: true },
+    designation: { type: String },
+    admin: { type: Boolean },
+    passHash: {
+        type: String,
+        required: true
+    },
 });
-function sendMail(email, sub, msg) {
+userSchema.methods.activateAccount = function () {
     return __awaiter(this, void 0, void 0, function () {
-        var mail, info, err_1;
+        var password, passHash, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    mail = {
-                        from: process.env.EMAILADDRESS,
-                        to: email,
-                        subject: sub,
-                        text: msg
-                    };
+                    password = genpass.generate({
+                        length: 5,
+                        numbers: false
+                    });
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, transporter.sendMail(mail)];
+                    return [4 /*yield*/, bcrypt.hash(password, 10)];
                 case 2:
-                    info = _a.sent();
-                    return [2 /*return*/, info];
+                    passHash = _a.sent();
+                    this.passHash = passHash ? passHash : this.passHash;
+                    this.activated = true;
+                    return [2 /*return*/, [password, passHash]];
                 case 3:
                     err_1 = _a.sent();
-                    console.log(err_1);
-                    return [2 /*return*/, false];
+                    throw new mongoose_1.default.Error('Failled to activate account');
                 case 4: return [2 /*return*/];
             }
         });
     });
-}
-exports.default = sendMail;
+};
+userSchema.statics.getUserByEmail = function (email, cb) {
+    console.log("Find by email from statics");
+    return this.findOne(({ email: email }));
+};
+userSchema.statics.getUserById = function (id) {
+    return this.findById(id);
+};
+var User = mongoose_1.default.model('users', userSchema);
+exports.default = User;

@@ -41,61 +41,107 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var authApiRouter = express_1.default.Router();
-var userSchema_1 = __importDefault(require("../userSchema"));
-var sendMail = require('../mailerModule');
-authApiRouter.post('/createaccount', function (req, res) {
+var userSchema_1 = __importDefault(require("../schema/userSchema"));
+var errorHandler_1 = require("../middleware/errorHandler");
+// import logger from '../logger';
+var passport_1 = __importDefault(require("passport"));
+var mailerModule_1 = __importDefault(require("../lib/mailerModule"));
+var authMiddleware_1 = require("../middleware/authMiddleware");
+authApiRouter.post('/createaccount', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
-        var user, _a, password, passHash, message, info, err_1;
+        var user, _a, password, passHash, message, activatedUser, info, err_1, err_2;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _b.trys.push([0, 8, , 9]);
+                    _b.trys.push([0, 12, , 13]);
                     return [4 /*yield*/, userSchema_1.default.findOne({ email: req.body.email }).exec()];
                 case 1:
                     user = _b.sent();
-                    if (!user) return [3 /*break*/, 6];
+                    if (!user) return [3 /*break*/, 10];
                     if (!user.activated) return [3 /*break*/, 2];
-                    res.json({
-                        errorCode: 2,
-                        error: 'User already exists.'
-                    });
-                    return [3 /*break*/, 5];
-                case 2: return [4 /*yield*/, user.activateAccount()];
+                    next(new errorHandler_1.EbwaError('User already activated, please login', 200, 2, '/login'));
+                    return [3 /*break*/, 9];
+                case 2:
+                    _b.trys.push([2, 7, , 9]);
+                    return [4 /*yield*/, user.activateAccount()];
                 case 3:
                     _a = _b.sent(), password = _a[0], passHash = _a[1];
                     message = 'Your EBWA portal password is ' + password;
-                    return [4 /*yield*/, sendMail(req.body.email, "Welcome to EBWA", message)];
+                    return [4 /*yield*/, user.save()];
                 case 4:
+                    activatedUser = _b.sent();
+                    if (!(password && activatedUser)) return [3 /*break*/, 6];
+                    return [4 /*yield*/, mailerModule_1.default(req.body.email, "Welcome to EBWA", message)];
+                case 5:
                     info = _b.sent();
-                    console.group('Mail Response');
                     console.log(info);
-                    console.groupEnd();
-                    if (info.accepted.includes(req.body.eamil)) {
-                        res.redirect('/f/auth/login');
-                    }
-                    else {
-                        res.redirect('/f/error');
-                    }
-                    _b.label = 5;
-                case 5: return [3 /*break*/, 7];
-                case 6:
                     res.json({
-                        errorCode: 1,
-                        error: 'User not Found'
+                        code: 1,
+                        payload: {
+                            message: 'Account details have been mailled to ' + info.accepted[0],
+                            redirect: '/login'
+                        }
                     });
-                    _b.label = 7;
-                case 7: return [3 /*break*/, 9];
-                case 8:
+                    _b.label = 6;
+                case 6: return [3 /*break*/, 9];
+                case 7:
                     err_1 = _b.sent();
-                    res.json({
-                        errorCode: 500,
-                        error: 'Server Error',
-                        errorMessage: err_1.message
-                    });
+                    user.activated = false;
+                    return [4 /*yield*/, user.save()];
+                case 8:
+                    _b.sent();
+                    next(new errorHandler_1.EbwaError('Failled to generate a password or send mail, reverting user to inactive, please try again or contant sys admin.', 500, 500));
                     return [3 /*break*/, 9];
-                case 9: return [2 /*return*/];
+                case 9: return [3 /*break*/, 11];
+                case 10:
+                    next(new errorHandler_1.EbwaError('User not found, we have not yet received or processed your records.', 200, 455));
+                    _b.label = 11;
+                case 11: return [3 /*break*/, 13];
+                case 12:
+                    err_2 = _b.sent();
+                    console.log(err_2);
+                    next(new errorHandler_1.EbwaError(err_2.message, 500, 500));
+                    return [3 /*break*/, 13];
+                case 13: return [2 /*return*/];
             }
         });
     });
 });
-module.exports = authApiRouter;
+authApiRouter.post('/login', authMiddleware_1.isLogInNecessary, function (req, res, next) {
+    passport_1.default.authenticate('local', function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            return next(new errorHandler_1.EbwaError(info, 401, 401));
+        }
+        req.logIn(user, function (err) {
+            if (err) {
+                return next(err);
+            }
+            return res.json({
+                code: 2,
+                payload: {
+                    user: user
+                }
+            });
+        });
+    })(req, res, next);
+});
+authApiRouter.post('/logout', function (req, res, next) {
+    var user = req.user;
+    req.session.destroy(function (err) {
+        if (err) {
+            return next(err);
+        }
+        res.clearCookie('session-ebwa');
+        req.logOut();
+        res.json({
+            code: 3,
+            payload: {
+                userEmail: user.email
+            }
+        });
+    });
+});
+exports.default = authApiRouter;
