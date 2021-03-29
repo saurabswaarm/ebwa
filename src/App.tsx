@@ -3,24 +3,27 @@ import AppBar from "./components/AppBar/AppBar";
 import Authentication from './components/Authentication/Authentication';
 import Welcome from './components/Welcome';
 import ErrorScreen from './components/ErrorScreen';
+import NoticeBoard from "./components/NoticeBoard/NoticeBoard";
 
 import {
   BrowserRouter as Router,
   Switch,
   Route
 } from "react-router-dom";
-import NoticeBoard from "./components/NoticeBoard/NoticeBoard";
+import { Provider } from 'react-redux'
+import store from './redux/store'
 
 
 
 
 function App() {
   return (
-    <Router>
+    <Provider store={store}>
+       <Router>
       <AppWrapper>
         <AppBar />
         <Switch>
-          <Route path="/f/auth">
+          <Route path="/f/auth/*">
             <Authentication />
           </Route>
 
@@ -39,6 +42,8 @@ function App() {
         </Switch>
       </AppWrapper>
     </Router>
+    </Provider>
+   
   )
 }
 

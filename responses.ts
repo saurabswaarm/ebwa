@@ -26,7 +26,7 @@
         code:458,
         payload: {
             status:200,
-            message:'User Already Logged In'
+            message:'Couldnt log out the user'
         }
     },
     {
@@ -69,7 +69,7 @@ let success = [
     {
         code:4, // sending all posts
         payload: {
-            posts:['post', 'post'];
+            posts:['post', 'post']
         }
     },
     {

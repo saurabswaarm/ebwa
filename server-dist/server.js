@@ -7,6 +7,9 @@ if (process.env.BUILD == "development") {
     console.log('Development Environment');
     require('dotenv').config();
 }
+// import fs from 'fs';
+// import http from 'http';
+// import https from 'https';
 var path_1 = __importDefault(require("path"));
 var express_1 = __importDefault(require("express"));
 var app = express_1.default();
@@ -34,12 +37,14 @@ mdb.once('open', function () {
 });
 var auth_1 = __importDefault(require("./lib/auth"));
 auth_1.default(passport_1.default, userSchema_1.default);
-var corsOptions = {
-    origin: 'http://localhost:3000',
-    credentials: true,
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
-app.use(cors_1.default(corsOptions));
+if (process.env.BUILD == "development") {
+    var corsOptions = {
+        origin: 'http://localhost:3000',
+        credentials: true,
+        optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+    };
+    app.use(cors_1.default(corsOptions));
+}
 app.use(express_1.default.static(path_1.default.join(__dirname, "..", "build")));
 app.use(express_1.default.json());
 app.use(cookie_parser_1.default(process.env.SESSION_SECRET));
@@ -71,7 +76,18 @@ app.use(function (req, res, next) {
 });
 // error handler
 app.use(errorHandler_1.errorHandler);
+// let privateKey = fs.readFileSync(path.join(__dirname,"..", "certs","key.pem"));
+// let certificate = fs.readFileSync(path.join(__dirname,"..", "certs","cert.pem"));
+// let credentials = {key:privateKey, cert:certificate, passphrase: 'YOUR PASSPHRASE HERE' } as http.ServerOptions;
+// let httpServer = http.createServer(app);
+// let httpsServer = https.createServer(credentials, app);
 // start express server on port 5000
 app.listen(process.env.PORTNO, function () {
     console.log("server started on port " + process.env.PORTNO);
 });
+// httpServer.listen(process.env.PORTNO, ()=>{
+//   console.log("http server started on port " + process.env.PORTNO);
+// })
+// httpsServer.listen(process.env.HTTPS_PORTNO, ()=>{
+//   console.log("https server started on port " + process.env.HTTPS_PORTNO);
+// })

@@ -3,6 +3,9 @@ if(process.env.BUILD == "development"){
   require('dotenv').config();
 }
 
+// import fs from 'fs';
+// import http from 'http';
+// import https from 'https';
 import path from 'path';
 import express from 'express';
 let app = express();
@@ -25,8 +28,9 @@ import postsApiRouter from './routes/postApi';
 
 
 
+
 import mongoose from 'mongoose';
-import User, { IUserM} from './schema/userSchema';
+import User from './schema/userSchema';
 mongoose.connect(process.env.DBURI!, {useNewUrlParser: true, useUnifiedTopology: true});
 const mdb = mongoose.connection;
     mdb.on('error', console.error.bind(console, 'connection error:'));
@@ -36,14 +40,17 @@ const mdb = mongoose.connection;
 
 
 import passportInit from './lib/auth'
-passportInit(passport, <IUserM>User);
+passportInit(passport, User);
 
-var corsOptions = {
-  origin: 'http://localhost:3000',
-  credentials:true,
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+if(process.env.BUILD == "development"){
+  var corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials:true,
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  }
+  app.use(cors(corsOptions))
 }
-app.use(cors(corsOptions))
+
 app.use(express.static(path.join(__dirname, "..", "build")));
 app.use(express.json());
 app.use(cookieParser(process.env.SESSION_SECRET));
@@ -56,7 +63,7 @@ app.use(session({
   rolling:false,
   saveUninitialized: false,
   store:new MongoStore({mongooseConnection:mongoose.connection}),
-  cookie: { path: '/', httpOnly: true, secure: false, maxAge: 60000000 }
+  cookie: { path: '/', httpOnly: true, secure: false, maxAge: 60000000}
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -83,8 +90,25 @@ app.use(function(req, res, next) {
 app.use(errorHandler);
 
 
+
+// let privateKey = fs.readFileSync(path.join(__dirname,"..", "certs","key.pem"));
+// let certificate = fs.readFileSync(path.join(__dirname,"..", "certs","cert.pem"));
+// let credentials = {key:privateKey, cert:certificate, passphrase: 'YOUR PASSPHRASE HERE' } as http.ServerOptions;
+
+// let httpServer = http.createServer(app);
+// let httpsServer = https.createServer(credentials, app);
+
+
 // start express server on port 5000
 app.listen(process.env.PORTNO, () => {
   console.log("server started on port " + process.env.PORTNO);
 }); 
+
+// httpServer.listen(process.env.PORTNO, ()=>{
+//   console.log("http server started on port " + process.env.PORTNO);
+// })
+
+// httpsServer.listen(process.env.HTTPS_PORTNO, ()=>{
+//   console.log("https server started on port " + process.env.HTTPS_PORTNO);
+// })
 

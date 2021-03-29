@@ -1,6 +1,6 @@
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
-import { IUser, IUserM } from "../schema/userSchema";
+import { IUser, IUserM } from "../../types/authTypes";
 import { PassportStatic } from "passport";
 
 

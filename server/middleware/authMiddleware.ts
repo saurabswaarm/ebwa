@@ -1,7 +1,8 @@
 import express from 'express';
 import { EbwaError } from './errorHandler';
-import {IUser} from '../schema/userSchema';
+import {IUser} from '../../types/authTypes';
 import Post, {IPost} from '../schema/postSchema';
+import {trimUserObject} from '../lib/userDbUtil';
 
 
 export function isLoggedIn(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -14,7 +15,12 @@ export function isLoggedIn(req: express.Request, res: express.Response, next: ex
 
 export function isLogInNecessary(req: express.Request, res: express.Response, next: express.NextFunction){
     if(req.user){
-        next(new EbwaError('You are already logged in.', 200, 458))
+        res.json({
+            code:2,
+            payload:{
+                user:trimUserObject(<IUser>req.user)
+            }
+        });
     } else {
         next();
     }

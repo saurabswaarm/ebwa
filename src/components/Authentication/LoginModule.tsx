@@ -1,45 +1,28 @@
 import React, { useState, useEffect } from "react";
 import  {Link, useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux'
+import {logInUser} from '../../redux/actions';
+import {getUserFromState} from '../../redux/selectors';
+
 
 function LoginModule() {
+
   let history = useHistory();
+  let dispatch = useDispatch();
+  let user = useSelector(getUserFromState);
   let [loginDisabled, setLoginDisabled] = useState(true);
   let [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
+    email: "saurabsalhotra@gmail.com",
+    password: "BSZTD",
   });
 
-  async function handleLogin(e: React.SyntheticEvent): Promise<void> {
+  function handleLogin(e: React.SyntheticEvent): void {
     e.preventDefault();
-    let response: Response = await fetch(
-      "http://localhost:3006/api/auth/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials:"include",
-        body: JSON.stringify(credentials),
-      }
-    );
-
-    let responseJson = await response.json();
-    console.log(responseJson);
-
-    if(responseJson.code == 2){
-      history.push('/f/noticeboard')
-    } else if( responseJson.code == 401) {
-      history.push('/f/auth/invalidpassword')
-    } 
-    // else if(responseJson.code == 458) {
-    //   history.push('/f/noticeboard') 
-    // }
-    else {
-      history.push('/f/error?error='+responseJson.payload.message);
-    }
+    dispatch(logInUser(credentials));
+    history.push('/f/noticeboard');
   }
 
-  function handleInput(e: React.SyntheticEvent) {
+  function handleInput(e: React.SyntheticEvent):void {
     const target = e.currentTarget as HTMLInputElement;
     setCredentials({
       ...credentials,
@@ -54,7 +37,6 @@ function LoginModule() {
   function validateCredentials(): boolean {
     let e = credentials.email;
     let p = credentials.password;
-    let disabled = true;
     if (e && p) {
       return e.includes("@") && e.includes(".") && p.length >= 5;
     } else {

@@ -47,6 +47,7 @@ var errorHandler_1 = require("../middleware/errorHandler");
 var passport_1 = __importDefault(require("passport"));
 var mailerModule_1 = __importDefault(require("../lib/mailerModule"));
 var authMiddleware_1 = require("../middleware/authMiddleware");
+var userDbUtil_1 = require("../lib/userDbUtil");
 authApiRouter.post('/createaccount', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function () {
         var user, _a, password, passHash, message, activatedUser, info, err_1, err_2;
@@ -122,26 +123,29 @@ authApiRouter.post('/login', authMiddleware_1.isLogInNecessary, function (req, r
             return res.json({
                 code: 2,
                 payload: {
-                    user: user
+                    user: userDbUtil_1.trimUserObject(user)
                 }
             });
         });
     })(req, res, next);
 });
 authApiRouter.post('/logout', function (req, res, next) {
-    var user = req.user;
-    req.session.destroy(function (err) {
-        if (err) {
-            return next(err);
-        }
-        res.clearCookie('session-ebwa');
-        req.logOut();
-        res.json({
-            code: 3,
-            payload: {
-                userEmail: user.email
+    if (req.user) {
+        var user_1 = req.user;
+        console.log('logging out ' + user_1.email);
+        req.session.destroy(function (err) {
+            if (err) {
+                return next(new errorHandler_1.EbwaError(err.message, 200, 458));
             }
+            req.logOut();
+            res.clearCookie('session-ebwa');
+            res.json({
+                code: 3,
+                payload: {
+                    userEmail: user_1.email
+                }
+            });
         });
-    });
+    }
 });
 exports.default = authApiRouter;

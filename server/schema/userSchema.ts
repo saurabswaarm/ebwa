@@ -1,33 +1,16 @@
 import mongoose, { Model, Schema, Document } from "mongoose";
+import {IUserD, IUserM} from '../../types/authTypes';
 
 let genpass = require('generate-password');
 let bcrypt = require('bcrypt');
 
-export interface IUser extends Document {
-    _id: string
-    name:string
-    email: string,
-    phone: number,
-    activated: boolean,
-    designation: string,
-    admin:boolean,
-    cid:string,
-    passHash:string,
-
-    // statics and methods
-    activateAccount:Function,
-}
-
-export interface IUserM extends Model<IUser> {
-    getUserByEmail:Function,
-    getUserById:Function
-}
-
-let userSchema:Schema<IUser> = new mongoose.Schema({
+let userSchema:Schema<IUserD> = new mongoose.Schema({
     email: { type: String, index: true },
     phone: { type: Number, index: true },
     name: {type: String},
     activated: { type: Boolean },
+    verified: {type: Boolean},
+    verifiedBy: {type:Boolean},
     cid: { type: String, index: true },
     designation: {type: String},
     admin: {type:Boolean},
@@ -35,7 +18,6 @@ let userSchema:Schema<IUser> = new mongoose.Schema({
         type: String,
         required: true
     },
-
 });
 
 userSchema.methods.activateAccount = async function() {
@@ -65,10 +47,7 @@ userSchema.statics.getUserById = function (id: String) {
 }
 
 
-let User:Model<IUser>= mongoose.model('users', userSchema);
-
-
-
+let User= mongoose.model('users', userSchema) as IUserM;
 
 export default User;
 

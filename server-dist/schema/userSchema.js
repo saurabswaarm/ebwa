@@ -47,6 +47,8 @@ var userSchema = new mongoose_1.default.Schema({
     phone: { type: Number, index: true },
     name: { type: String },
     activated: { type: Boolean },
+    verified: { type: Boolean },
+    verifiedBy: { type: Boolean },
     cid: { type: String, index: true },
     designation: { type: String },
     admin: { type: Boolean },

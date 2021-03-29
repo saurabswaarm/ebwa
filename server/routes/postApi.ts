@@ -2,7 +2,7 @@ import express from 'express';
 import {isAdmin, isLoggedIn} from '../middleware/authMiddleware';
 import { EbwaError } from '../middleware/errorHandler';
 import Post, {IPost} from '../schema/postSchema';
-import {IUser} from '../schema/userSchema';
+import {IUser} from '../../types/authTypes';
 
 let postsApiRouter = express.Router();
 

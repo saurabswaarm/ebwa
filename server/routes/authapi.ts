@@ -1,18 +1,20 @@
-import express from 'express';
+import express, { response } from 'express';
 const authApiRouter = express.Router();
-import User, { IUser } from '../schema/userSchema';
+import User from '../schema/userSchema';
+import { IUserD, IUser } from '../../types/authTypes'
 import { EbwaError } from '../middleware/errorHandler';
 // import logger from '../logger';
 import passport from 'passport';
 
 import sendMail from '../lib/mailerModule';
 import { isLogInNecessary } from '../middleware/authMiddleware';
+import { trimUserObject } from '../lib/userDbUtil';
 
 authApiRouter.post('/createaccount', async function (req: express.Request, res: express.Response, next: express.NextFunction) {
   // logger('boop');
   try {
 
-    let user:IUser = await User.findOne({ email: req.body.email }).exec();
+    let user: IUserD = await User.findOne({ email: req.body.email }).exec();
 
     if (user) {
 
@@ -31,7 +33,7 @@ authApiRouter.post('/createaccount', async function (req: express.Request, res: 
             res.json({
               code: 1,
               payload: {
-                message: 'Account details have been mailled to '+ info.accepted[0],
+                message: 'Account details have been mailled to ' + info.accepted[0],
                 redirect: '/login'
               }
             })
@@ -41,9 +43,7 @@ authApiRouter.post('/createaccount', async function (req: express.Request, res: 
           await user.save();
           next(new EbwaError('Failled to generate a password or send mail, reverting user to inactive, please try again or contant sys admin.', 500, 500));
         }
-
       }
-
     } else {
       next(new EbwaError('User not found, we have not yet received or processed your records.', 200, 455));
     }
@@ -63,9 +63,9 @@ authApiRouter.post('/login', isLogInNecessary, (req: express.Request, res: expre
     req.logIn(user, function (err) {
       if (err) { return next(err) }
       return res.json({
-        code:2,
-        payload:{
-          user
+        code: 2,
+        payload: {
+          user: trimUserObject(user)
         }
       });
     })
@@ -74,18 +74,23 @@ authApiRouter.post('/login', isLogInNecessary, (req: express.Request, res: expre
 });
 
 authApiRouter.post('/logout', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  let user = <IUser>req.user!;
-  req.session.destroy((err) => {
-    if (err) { return next(err) }
-    res.clearCookie('session-ebwa');
-    req.logOut();
-    res.json({
-      code:3,
-      payload:{
-        userEmail:user.email
-      }
-    })
-  });
+  if (req.user) {
+    let user = <IUser>req.user!;
+    console.log('logging out ' + user.email);
+
+    req.session.destroy((err) => {
+      if (err) { return next(new EbwaError(err.message, 200, 458)) }
+      req.logOut();
+      res.clearCookie('session-ebwa');
+      res.json({
+        code: 3,
+        payload: {
+          userEmail: user.email
+        }
+      })
+    });
+  }
+
 })
 
 
