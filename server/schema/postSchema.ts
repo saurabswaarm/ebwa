@@ -1,17 +1,5 @@
-import mongoose, {Schema, Model, Document} from 'mongoose';
-
-export interface IPost extends Document  {
-    _id?:number,
-    title:string,
-    subject:string,
-    message:string,
-    date:Date,
-    author:{
-        id:string,
-        name:string,
-        designation:string
-    }
-}
+import mongoose, {Schema, Model} from 'mongoose';
+import {IPost} from '../../types/postTypes';
 
 
 let postSchema:Schema<IPost> = new Schema({

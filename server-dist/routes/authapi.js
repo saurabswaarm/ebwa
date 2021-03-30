@@ -147,5 +147,22 @@ authApiRouter.post('/logout', function (req, res, next) {
             });
         });
     }
+    else {
+        next(new errorHandler_1.EbwaError('No such session exists', 401, 401));
+    }
+});
+authApiRouter.get('/resumesession', function (req, res, next) {
+    if (req.user) {
+        var user = req.user;
+        res.json({
+            code: 2,
+            payload: {
+                user: userDbUtil_1.trimUserObject(user)
+            }
+        });
+    }
+    else {
+        next(new errorHandler_1.EbwaError('No such session exists', 401, 401));
+    }
 });
 exports.default = authApiRouter;

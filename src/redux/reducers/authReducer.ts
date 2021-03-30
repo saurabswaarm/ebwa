@@ -2,25 +2,16 @@ import { Reducer } from "redux";
 import { AppState } from "../../../types/stateTypes";
 import {REMOVE_USER, SET_USER, SET_USER_ERR} from '../actionTypes'
 
-const authReducer: Reducer<AppState | undefined> = function (state, action) {
+let initialState = false;
+
+const authReducer: Reducer<AppState['user'] | undefined> = function (state = initialState, action) {
     switch (action.type) {
-        case SET_USER_ERR: {
-            return {
-                user:action.payload,
-                noticeBoard:false
-            }
-        }
+
         case SET_USER: {
-            return {
-                user:action.payload,
-                noticeBoard:false
-            }
+            return action.payload
         }
         case REMOVE_USER: {
-            return {
-                user:false,
-                noticeBoard:false
-            }
+            return false
         }
         default: {
             return state

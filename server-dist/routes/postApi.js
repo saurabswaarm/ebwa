@@ -55,7 +55,10 @@ postsApiRouter.get('/', authMiddleware_1.isLoggedIn, function (req, res, next) {
                 case 1:
                     posts = _a.sent();
                     res.json({
-                        posts: posts
+                        code: 4,
+                        payload: {
+                            posts: posts
+                        }
                     });
                     return [3 /*break*/, 3];
                 case 2:
@@ -93,7 +96,10 @@ postsApiRouter.post('/', authMiddleware_1.isAdmin, function (req, res, next) {
                 case 2:
                     postCreated = _a.sent();
                     res.json({
-                        post: postCreated
+                        code: 4,
+                        payload: {
+                            post: postCreated
+                        }
                     });
                     return [3 /*break*/, 4];
                 case 3:

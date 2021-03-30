@@ -1,4 +1,5 @@
 "use strict";
+console.log(process.env.NODE_ENV);
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };

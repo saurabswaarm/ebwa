@@ -1,14 +1,16 @@
 import { Reducer } from "redux";
 import { AppState } from "../../../types/stateTypes";
-import {SET_USER, SET_NO_USER} from '../actionTypes'
+import {SET_NOTICEBOARD, REMOVE_NOTICEBOARD} from '../actionTypes'
 
-const noticeBoardReducer: Reducer<AppState | undefined> = function (state, action) {
+let initialState = false;
+
+const noticeBoardReducer: Reducer<AppState["noticeBoard"] | undefined> = function (state = initialState, action) {
     switch (action.type) {
-        case 'SET_NO_USER': {
-            return {
-                user:false,
-                noticeBoard:false
-            }
+        case SET_NOTICEBOARD: {
+            return action.payload
+        }
+        case REMOVE_NOTICEBOARD: {
+            return false
         }
         default: {
             return state

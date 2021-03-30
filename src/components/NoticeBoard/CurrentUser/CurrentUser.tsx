@@ -2,8 +2,8 @@ import {useSelector} from 'react-redux';
 import { IUserF } from '../../../../types/authTypes';
 import {getUserFromState} from '../../../redux/selectors';
 
-function CurrentUser() {
-  let user = useSelector(getUserFromState) as IUserF;
+function CurrentUser(props:{user:IUserF}) {
+  let user = props.user;
 
     return (
         <div className="container mt-3 mb-0">

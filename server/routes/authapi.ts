@@ -89,8 +89,25 @@ authApiRouter.post('/logout', (req: express.Request, res: express.Response, next
         }
       })
     });
+  } else {
+    next(new EbwaError('No such session exists', 401, 401))
   }
 
+})
+
+authApiRouter.get('/resumesession', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  
+  if (req.user) {
+    let user = <IUser>req.user!; 
+    res.json({
+      code: 2,
+      payload: {
+        user: trimUserObject(user)
+      }
+    });
+  } else {
+    next(new EbwaError('No such session exists', 401, 401)) 
+  }
 })
 
 

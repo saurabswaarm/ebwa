@@ -10,7 +10,7 @@ function AppBar() {
   let history = useHistory();
 
   function handleLogOut(e: React.SyntheticEvent) {
-    // e.preventDefault();
+    document.getElementById("nav-toggle-toggle")?.click();
     dispatch(logOutUser());
     history.push("/f/auth/login");
     console.log(history);
@@ -38,8 +38,8 @@ function AppBar() {
 
   let loggedOutOptions =(
     <>
-     <li className="nav-item">
-        <Link className="nav-link" to="/f/auth/login">
+     <li className="nav-item" onClick={()=>(document.getElementById("nav-toggle-toggle")!.click())}>
+        <Link className="nav-link" to="/f/auth/login" >
           Log In
         </Link>
       </li> 
@@ -47,7 +47,7 @@ function AppBar() {
   )
 
   return (
-    <nav className="navbar navbar-dark bg-dark" onClick={()=>document.getElementById("nav-toggle-toggle")?.click()}>
+    <nav className="navbar navbar-dark bg-dark" >
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
           EBWA

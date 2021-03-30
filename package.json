@@ -20,6 +20,7 @@
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
     "@types/redux": "^3.6.0",
+    "@types/redux-thunk": "^2.1.0",
     "aws-sdk": "^2.868.0",
     "bcrypt": "^5.0.1",
     "bluebird": "^3.7.2",
@@ -53,7 +54,7 @@
     "start": "node server-dist/server.js",
     "dev-watch-ts": "cd ./server && tsc --watch",
     "dev-start-server": "BUILD=development nodemon server-dist/server",
-    "dev-start-cra-server": "react-scripts start",
+    "dev-start-cra-server": "BUILD=development react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

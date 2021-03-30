@@ -19,7 +19,7 @@ function LoginModule() {
   function handleLogin(e: React.SyntheticEvent): void {
     e.preventDefault();
     dispatch(logInUser(credentials));
-    history.push('/f/noticeboard');
+    
   }
 
   function handleInput(e: React.SyntheticEvent):void {
@@ -32,6 +32,9 @@ function LoginModule() {
 
   useEffect(() => {
     setLoginDisabled(!validateCredentials());
+    if(user){
+      history.push('/f/noticeboard');
+    }
   });
 
   function validateCredentials(): boolean {

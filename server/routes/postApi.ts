@@ -1,45 +1,53 @@
 import express from 'express';
-import {isAdmin, isLoggedIn} from '../middleware/authMiddleware';
+import { isAdmin, isLoggedIn } from '../middleware/authMiddleware';
 import { EbwaError } from '../middleware/errorHandler';
-import Post, {IPost} from '../schema/postSchema';
-import {IUser} from '../../types/authTypes';
+import Post, { IPost } from '../schema/postSchema';
+import { IUser } from '../../types/authTypes';
 
 let postsApiRouter = express.Router();
 
 
-postsApiRouter.get('/', isLoggedIn, async function(req: express.Request, res: express.Response, next: express.NextFunction){
+postsApiRouter.get('/', isLoggedIn, async function (req: express.Request, res: express.Response, next: express.NextFunction) {
     try {
-        let posts:IPost[] = await Post.find();
+        let posts: IPost[] = await Post.find();
         res.json({
-            posts:posts
+            code: 4,
+            payload: {
+                posts: posts
+            }
         })
-    } catch(err){
+    } catch (err) {
         next(new EbwaError(err.message, 500, 500));
     }
 })
 
-postsApiRouter.post('/', isAdmin, async function(req: express.Request, res: express.Response, next: express.NextFunction){
+postsApiRouter.post('/', isAdmin, async function (req: express.Request, res: express.Response, next: express.NextFunction) {
 
-    let user:IUser = <IUser>req.user;
+    let user: IUser = <IUser>req.user;
 
     console.log(user.name);
 
-    if(req.body.title && req.body.subject && req.body.message){
+    if (req.body.title && req.body.subject && req.body.message) {
         try {
             let postCreated = await Post.create({
-                title:req.body.title,
-                subject:req.body.subject,
-                message:req.body.message,
-                date:new Date(),
-                author:{
+                title: req.body.title,
+                subject: req.body.subject,
+                message: req.body.message,
+                date: new Date(),
+                author: {
                     id: user._id,
                     name: user.name,
                     designation: user.designation
-                }});
+                }
+            });
             res.json({
-                post:postCreated
+                code: 4,
+                payload: {
+                    post: postCreated
+                }
+
             })
-        } catch(err){
+        } catch (err) {
             next(new EbwaError(err.message, 500, 500));
         }
 
@@ -48,6 +56,5 @@ postsApiRouter.post('/', isAdmin, async function(req: express.Request, res: expr
     }
 });
 
-    
+
 export default postsApiRouter;
-    

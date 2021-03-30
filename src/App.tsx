@@ -12,11 +12,13 @@ import {
 } from "react-router-dom";
 import { Provider } from 'react-redux'
 import store from './redux/store'
+import { config } from "./config";
 
 
 
 
 function App() {
+  console.log(config.host);
   return (
     <Provider store={store}>
        <Router>
