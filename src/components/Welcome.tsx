@@ -37,7 +37,7 @@ function Welcome() {
 
   return (
       <div className="container-fluid d-flex flex-column align-items-stretch justify-content-center text-center vh-100 p-5">
-        <h1 className="mb-5">Welcome to Expat Buyer's Welfare Associaiton</h1>
+        <h1 className="mb-5">Welcome to EBWA</h1>
         <p className="fs-4">
           If this is your first time here, please claim your account.
         </p>

@@ -1,4 +1,4 @@
-import {Document} from 'mongoose';
+import {Document} from 'mongoose';P
 
 export interface IPost extends Document  {
     _id?:number,

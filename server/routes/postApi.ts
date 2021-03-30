@@ -1,8 +1,10 @@
 import express from 'express';
 import { isAdmin, isLoggedIn } from '../middleware/authMiddleware';
 import { EbwaError } from '../middleware/errorHandler';
-import Post, { IPost } from '../schema/postSchema';
+import Post from '../schema/postSchema';
+
 import { IUser } from '../../types/authTypes';
+import { IPost } from '../../types/postTypes';
 
 let postsApiRouter = express.Router();
 
@@ -41,7 +43,7 @@ postsApiRouter.post('/', isAdmin, async function (req: express.Request, res: exp
                 }
             });
             res.json({
-                code: 4,
+                code: 5,
                 payload: {
                     post: postCreated
                 }

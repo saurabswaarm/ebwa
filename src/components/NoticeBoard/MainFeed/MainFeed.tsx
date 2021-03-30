@@ -6,7 +6,7 @@ function MainFeed({ posts }: { posts: IPost[] }) {
 
   if (posts instanceof Array && posts.length > 0) {
     for (let post of posts) {
-      postsToRender.push(<Post post={post} />);
+      postsToRender.push(<Post key={post._id} post={post} />);
     }
   }
 

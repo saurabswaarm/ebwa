@@ -4,6 +4,7 @@ import {useEffect} from 'react';
 import {useHistory} from 'react-router';
 import {useSelector} from 'react-redux';
 import {getUserFromState, getPostsFromState} from '../../redux/selectors';
+import UserActions from "./CurrentUser/UserActions";
 
 export default function NoticeBoard() {
 
@@ -12,7 +13,7 @@ export default function NoticeBoard() {
   let posts = useSelector(getPostsFromState);
 
   useEffect(()=>{
-    console.log(posts);
+    
     if(!user){
       console.log('Redirecting to Login');
       history.push('/f/auth/login');
@@ -21,11 +22,12 @@ export default function NoticeBoard() {
     }
     
   
-  })
+  },[user])
 
   return (
     <>
       <CurrentUser user={user}/>
+      <UserActions user={user}/>
       <MainFeed posts={posts}/>
     </>
   );

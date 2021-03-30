@@ -7,8 +7,9 @@ import { EbwaError } from '../middleware/errorHandler';
 import passport from 'passport';
 
 import sendMail from '../lib/mailerModule';
-import { isLogInNecessary } from '../middleware/authMiddleware';
+import { isAdmin, isLogInNecessary } from '../middleware/authMiddleware';
 import { trimUserObject } from '../lib/userDbUtil';
+import { create } from 'node:domain';
 
 authApiRouter.post('/createaccount', async function (req: express.Request, res: express.Response, next: express.NextFunction) {
   // logger('boop');
@@ -96,9 +97,9 @@ authApiRouter.post('/logout', (req: express.Request, res: express.Response, next
 })
 
 authApiRouter.get('/resumesession', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  
+
   if (req.user) {
-    let user = <IUser>req.user!; 
+    let user = <IUser>req.user!;
     res.json({
       code: 2,
       payload: {
@@ -106,7 +107,55 @@ authApiRouter.get('/resumesession', (req: express.Request, res: express.Response
       }
     });
   } else {
-    next(new EbwaError('No such session exists', 401, 401)) 
+    next(new EbwaError('No such session exists', 401, 401))
+  }
+})
+
+authApiRouter.post('/adduser', isAdmin, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+console.log('add user route fired'+req.body.email);
+  if (req.user && req.body.email && req.body.phone && req.body.name && req.body.cid) {
+    let user = <IUser>req.user!;
+
+    try {
+      let userWithExistingEmail = await User.findOne({ email: req.body.email });
+      let userwithExistingCID = await User.findOne({ cid: req.body.cid });
+
+      if (userWithExistingEmail !== null || userwithExistingCID !== null) {
+        next(new EbwaError('Cannot create user as they already exist', 200, 459))
+      }
+
+      let createdUser = await User.create({
+        email: req.body.email,
+        phone: req.body.phone,
+        name: req.body.name,
+        cid: req.body.cid,
+        verified: true,
+        activated:false,
+        verifiedBy: {
+          _id: user._id,
+          name: user.name,
+          cid: user.cid
+        },
+        designation:'MC Member',
+        admin:false
+      });
+  
+      res.json({
+        code: 6,
+        payload: {
+          user: createdUser
+        }
+      });
+
+      console.log('user created'+ createdUser.email);
+
+    } catch(err) {
+      next(new EbwaError(err.message, 500, 500))
+    }
+
+    
+  } else {
+    next(new EbwaError('Incomplete user data submitted', 200, 460));
   }
 })
 

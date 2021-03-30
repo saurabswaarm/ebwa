@@ -9,14 +9,16 @@ let userSchema:Schema<IUserD> = new mongoose.Schema({
     phone: { type: Number, index: true },
     name: {type: String},
     activated: { type: Boolean },
-    verified: {type: Boolean},
-    verifiedBy: {type:Boolean},
+    verified: {type:Boolean},
+    verifiedBy: {
+        _id:String,
+        name:String,
+    },
     cid: { type: String, index: true },
     designation: {type: String},
     admin: {type:Boolean},
     passHash: {
         type: String,
-        required: true
     },
 });
 

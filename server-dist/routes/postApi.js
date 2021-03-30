@@ -96,7 +96,7 @@ postsApiRouter.post('/', authMiddleware_1.isAdmin, function (req, res, next) {
                 case 2:
                     postCreated = _a.sent();
                     res.json({
-                        code: 4,
+                        code: 5,
                         payload: {
                             post: postCreated
                         }

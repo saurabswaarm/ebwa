@@ -13,28 +13,43 @@ import {
 import { Provider } from 'react-redux'
 import store from './redux/store'
 import { config } from "./config";
+import CreatePost from "./components/CreatePost/CreatePost";
+import CreateUser from "./components/CreateUser/CreateUser"
+import SuccessScreen from "./components/SuccessScreen";
 
 
 
 
 function App() {
-  console.log(config.host);
   return (
     <Provider store={store}>
        <Router>
       <AppWrapper>
         <AppBar />
         <Switch>
+
+          <Route path = '/f/auth/createuser'>
+            <CreateUser/>
+          </Route>
+
           <Route path="/f/auth/*">
             <Authentication />
           </Route>
 
-          <Route path="/f/noticeboard">
+          <Route exact path="/f/noticeboard/createpost">
+            <CreatePost/>
+          </Route>
+
+          <Route exact path="/f/noticeboard">
             <NoticeBoard/>
           </Route>
 
           <Route path="/f/error">
             <ErrorScreen/>
+          </Route>
+
+          <Route path="/f/success">
+            <SuccessScreen/>
           </Route>
 
           <Route path="/">

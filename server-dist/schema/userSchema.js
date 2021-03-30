@@ -48,13 +48,15 @@ var userSchema = new mongoose_1.default.Schema({
     name: { type: String },
     activated: { type: Boolean },
     verified: { type: Boolean },
-    verifiedBy: { type: Boolean },
+    verifiedBy: {
+        _id: String,
+        name: String,
+    },
     cid: { type: String, index: true },
     designation: { type: String },
     admin: { type: Boolean },
     passHash: {
         type: String,
-        required: true
     },
 });
 userSchema.methods.activateAccount = function () {

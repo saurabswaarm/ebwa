@@ -28,7 +28,7 @@ function AppBar() {
           Log Out
         </span>
       </li>
-      <li className="nav-item">
+      <li className="nav-item" onClick={()=>(document.getElementById("nav-toggle-toggle")!.click())}>
         <Link className="nav-link" to="/f/auth/changepassword">
           Change Password
         </Link>

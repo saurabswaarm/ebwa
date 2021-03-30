@@ -1,7 +1,6 @@
 import express from 'express';
 import { EbwaError } from './errorHandler';
 import {IUser} from '../../types/authTypes';
-import Post, {IPost} from '../schema/postSchema';
 import {trimUserObject} from '../lib/userDbUtil';
 
 

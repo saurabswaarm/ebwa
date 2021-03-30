@@ -30,6 +30,20 @@
         }
     },
     {
+        code:459,
+        payload: {
+            status:200,
+            message:'Cannot create user as user already exists'
+        }
+    },
+    {
+        code:460,
+        payload: {
+            status:200,
+            message:'Incomplete user data submitted'
+        }
+    },
+    {
         code:500,
         payload: {
             status:500,
@@ -76,6 +90,12 @@ let success = [
         code:5, // post created
         payload: {
             posts:'the post you just created'
+        }
+    },
+    {
+        code:6, // post created
+        payload: {
+            user:'the post you just created'
         }
     }
 ]

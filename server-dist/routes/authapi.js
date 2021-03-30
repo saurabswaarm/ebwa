@@ -165,4 +165,61 @@ authApiRouter.get('/resumesession', function (req, res, next) {
         next(new errorHandler_1.EbwaError('No such session exists', 401, 401));
     }
 });
+authApiRouter.post('/adduser', authMiddleware_1.isAdmin, function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var user, userWithExistingEmail, userwithExistingCID, createdUser, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log('add user route fired' + req.body.email);
+                if (!(req.user && req.body.email && req.body.phone && req.body.name && req.body.cid)) return [3 /*break*/, 7];
+                user = req.user;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 5, , 6]);
+                return [4 /*yield*/, userSchema_1.default.findOne({ email: req.body.email })];
+            case 2:
+                userWithExistingEmail = _a.sent();
+                return [4 /*yield*/, userSchema_1.default.findOne({ cid: req.body.cid })];
+            case 3:
+                userwithExistingCID = _a.sent();
+                if (userWithExistingEmail !== null || userwithExistingCID !== null) {
+                    next(new errorHandler_1.EbwaError('Cannot create user as they already exist', 200, 459));
+                }
+                return [4 /*yield*/, userSchema_1.default.create({
+                        email: req.body.email,
+                        phone: req.body.phone,
+                        name: req.body.name,
+                        cid: req.body.cid,
+                        verified: true,
+                        activated: false,
+                        verifiedBy: {
+                            _id: user._id,
+                            name: user.name,
+                            cid: user.cid
+                        },
+                        designation: 'MC Member',
+                        admin: false
+                    })];
+            case 4:
+                createdUser = _a.sent();
+                res.json({
+                    code: 6,
+                    payload: {
+                        user: createdUser
+                    }
+                });
+                console.log('user created' + createdUser.email);
+                return [3 /*break*/, 6];
+            case 5:
+                err_3 = _a.sent();
+                next(new errorHandler_1.EbwaError(err_3.message, 500, 500));
+                return [3 /*break*/, 6];
+            case 6: return [3 /*break*/, 8];
+            case 7:
+                next(new errorHandler_1.EbwaError('Incomplete user data submitted', 200, 460));
+                _a.label = 8;
+            case 8: return [2 /*return*/];
+        }
+    });
+}); });
 exports.default = authApiRouter;

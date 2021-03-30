@@ -1,14 +1,16 @@
-import { SET_USER_ERR, SET_USER, REMOVE_USER, SET_NOTICEBOARD, REMOVE_NOTICEBOARD, SET_NOTICEBOARD_ERR} from './actionTypes';
+import { SET_USER_ERR, SET_USER, REMOVE_USER, SET_NOTICEBOARD, REMOVE_NOTICEBOARD, SET_NOTICEBOARD_ERR } from './actionTypes';
 import { UserCredentials, IUserF, AuthError, AuthResponse } from '../../types/authTypes';
 import { Store, Action, Dispatch, AnyAction } from 'redux';
 import { config } from '../config';
-import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import { ThunkDispatch } from 'redux-thunk';
 import { AppState } from '../../types/stateTypes';
+import { IPost } from '../../types/postTypes';
+import qs from 'qs';
 
 
 
 export const logInUser = function (credentialsObject: UserCredentials) {
-    return async function (dispatch: Store['dispatch'], getState: Store['getState']) {
+    return async function (dispatch: ThunkDispatch<AppState, void, Action>, getState: Store['getState']) {
         try {
             let response: Response = await fetch(
                 `${config.host}/api/auth/login`,
@@ -25,7 +27,8 @@ export const logInUser = function (credentialsObject: UserCredentials) {
             let responseJson = await response.json();
 
             if (responseJson.code == 2) {
-                dispatch(setUser(responseJson.payload.user))
+                dispatch(setUser(responseJson.payload.user));
+                dispatch(getNoticeBoard());
             } else {
                 dispatch(setUserErr(responseJson.payload))
             }
@@ -53,7 +56,8 @@ export const logOutUser = function () {
         let responseJson = await response.json();
 
         if (responseJson.code == 3) {
-            dispatch(removeUser())
+            dispatch(removeUser());
+            dispatch(removeNoticeBoard());
         } else {
             dispatch(setUserErr(responseJson))
             dispatch(removeUser());
@@ -63,9 +67,9 @@ export const logOutUser = function () {
     }
 }
 
-export const resumeSession = function() {
+export const resumeSession = function () {
     console.log('resume session ran');
-    return async function (dispatch: ThunkDispatch<AppState,void ,Action>, getState: Store['getState']) {
+    return async function (dispatch: ThunkDispatch<AppState, void, Action>, getState: Store['getState']) {
         try {
             let response: Response = await fetch(
                 `${config.host}/api/auth/resumesession`,
@@ -121,28 +125,28 @@ export const removeUser = function () {
     }
 }
 
-export const setNoticeBoard = function(posts:any[]){
+export const setNoticeBoard = function (posts: any[]) {
     return {
-        type:SET_NOTICEBOARD,
-        payload:posts
+        type: SET_NOTICEBOARD,
+        payload: posts
     }
 }
 
-export const removeNoticeBoard = function() {
+export const removeNoticeBoard = function () {
     return {
-        type:REMOVE_NOTICEBOARD,
-        payload:null
+        type: REMOVE_NOTICEBOARD,
+        payload: null
     }
 }
 
-export const setNoticeBoardError = function(err:any) {
+export const setNoticeBoardError = function (err: any) {
     return {
-        type:SET_NOTICEBOARD_ERR,
-        payload:err
+        type: SET_NOTICEBOARD_ERR,
+        payload: err
     }
 }
 
-export const getNoticeBoard = function(){
+export const getNoticeBoard = function () {
     return async function (dispatch: Store['dispatch'], getState: Store['getState']) {
         try {
             let response: Response = await fetch(
@@ -165,10 +169,71 @@ export const getNoticeBoard = function(){
             }
         } catch (err) {
             console.log(err);
-            dispatch(removeUser())
         }
-    } 
+    }
+}
+
+export const addPost = function (post: Partial<IPost>) {
+    return async function (dispatch: ThunkDispatch<AppState, void, Action>, getState: Store['getState']) {
+        try {
+            let response: Response = await fetch(
+                `${config.host}/api/posts`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                    body: JSON.stringify(post)
+                }
+            );
+
+            let responseJson = await response.json();
+
+            if (responseJson.code == 5) {
+                dispatch(getNoticeBoard());
+            } else {
+                dispatch(setNoticeBoardError(responseJson()))
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
 }
 
 
+export const addUser = function (user: Partial<IUserF>, history:any) {
+    return async function (dispatch: Store['dispatch'], getState: Store['getState']) {
+        try {
+            let response: Response = await fetch(`${config.host}/api/auth/adduser`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                    body: JSON.stringify(user)
+
+                })
+
+            let responseJson = await response.json();
+
+            if (responseJson.code == 6) {
+                let qstr = qs.stringify({
+                    action:`added a new user`,
+                    message:`Added ${responseJson.payload.user.email} as new user.`
+                })
+                history.push(`/f/success?${qstr}`);
+            } else {
+                let qstr = qs.stringify({
+                    error:`Failed to add ${user.email} as new user.`
+                })
+                history.push(`/f/error?${qstr}`); 
+            }
+        } catch (err) {
+
+        }
+    }
+}
 
