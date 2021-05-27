@@ -1,28 +1,34 @@
 import React, { useState, useEffect } from "react";
-import  {Link, useHistory } from "react-router-dom";
-import { useSelector, useDispatch } from 'react-redux'
-import {logInUser} from '../../redux/actions';
-import {getUserFromState} from '../../redux/selectors';
-
+import { Link, useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logInUser } from "../../redux/actions";
+import { getUserFromState } from "../../redux/selectors";
+import { Button, TextField, Grid } from "@material-ui/core";
 
 function LoginModule() {
-
   let history = useHistory();
   let dispatch = useDispatch();
   let user = useSelector(getUserFromState);
   let [loginDisabled, setLoginDisabled] = useState(true);
   let [credentials, setCredentials] = useState({
-    email: "saurabsalhotra@gmail.com",
-    password: "BSZTD",
+    email: "",
+    password: "",
   });
+
+  // saurabsalhotra@gmail.com
+  // BSZTD
 
   function handleLogin(e: React.SyntheticEvent): void {
     e.preventDefault();
-    dispatch(logInUser(credentials));
-    
+    dispatch(logInUser(credentials, (loggedIn:boolean)=>{
+      if(!loggedIn){
+        history.push('/f/auth/invalidpassword');
+      }
+    }));
+
   }
 
-  function handleInput(e: React.SyntheticEvent):void {
+  function handleInput(e: React.SyntheticEvent): void {
     const target = e.currentTarget as HTMLInputElement;
     setCredentials({
       ...credentials,
@@ -32,8 +38,8 @@ function LoginModule() {
 
   useEffect(() => {
     setLoginDisabled(!validateCredentials());
-    if(user){
-      history.push('/f/noticeboard');
+    if (user) {
+      history.push("/f/noticeboard");
     }
   });
 
@@ -48,36 +54,51 @@ function LoginModule() {
   }
 
   return (
-    <form className="p-2 d-flex flex-column align-items-stretch">
-      <input
-        className="form-control my-2"
-        type="email"
-        name="email"
-        placeholder="email"
-        value={credentials.email}
-        required
-        onChange={handleInput}
-      />
-      <input
-        className="form-control my-2"
-        type="password"
-        name="password"
-        placeholder="password"
-        value={credentials.password}
-        required
-        onChange={handleInput}
-      />
-      <button
-        className="btn btn-info mt-4"
-        disabled={loginDisabled}
-        onClick={handleLogin}
-      >
-        Login
-      </button>
-      <Link to="/auth/forgotpassword" className="btn btn-info mt-4">
-        Forgot Password
-      </Link>
-    </form>
+    <Grid container direction="column">
+      <Grid item>
+        <TextField
+          fullWidth
+          margin="normal"
+          type="email"
+          name="email"
+          label="email"
+          variant="outlined"
+          value={credentials.email}
+          required
+          onChange={handleInput}
+        />
+      </Grid>
+
+      <Grid item>
+        <TextField
+          fullWidth
+          margin="normal"
+          variant="outlined"
+          helperText="Check your email"
+          type="password"
+          name="password"
+          label="password"
+          value={credentials.password}
+          required
+          onChange={handleInput}
+        />
+      </Grid>
+
+      <Grid item container justify="space-between">
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={loginDisabled}
+          onClick={handleLogin}
+        >
+          Login
+        </Button>
+
+        <Link to="/auth/forgotpassword" className="btn btn-info mt-4">
+          Forgot Password
+        </Link>
+      </Grid>
+    </Grid>
   );
 }
 

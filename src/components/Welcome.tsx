@@ -1,9 +1,24 @@
-import {useEffect, useState} from 'react';
-import {useHistory} from 'react-router';
-import {useSelector, useDispatch} from 'react-redux';
-import {getUserFromState} from '../redux/selectors';
-import { Link } from "react-router-dom";
-import { resumeSession } from '../redux/actions';
+import { useEffect, useState, useMemo } from "react";
+import { useHistory } from "react-router";
+import { useSelector, useDispatch } from "react-redux";
+import { getUserFromState } from "../redux/selectors";
+import { resumeSession } from "../redux/actions";
+import {
+  Grid,
+  Paper,
+  Divider,
+  Typography,
+  Box,
+} from "@material-ui/core";
+import {makeStyles} from '@material-ui/core/styles'
+import ButtonLink from './WrappedComponents/ButtonLink';
+
+const useStyles = makeStyles({
+  paper:{
+    height:'100%'
+  }
+})
+
 
 
 
@@ -14,44 +29,85 @@ function Welcome() {
 
   let [checkedSession, setSessionCheck] = useState(false);
 
-  useEffect(()=>{
-    if(user){
-      console.log('Pre-existing session detected, rerouting. User:'+ user.email)
-      history.push('/f/noticeboard');
+  let classes = useStyles();
+
+  useEffect(() => {
+    if (user) {
+      console.log(
+        "Pre-existing session detected, rerouting. User:" + user.email
+      );
+      history.push("/f/noticeboard");
     }
 
-    if(!user && !checkedSession){
-      console.log('Found no user, dispatching a resumeSession');
+    if (!user && !checkedSession) {
+      console.log("Found no user, dispatching a resumeSession");
       dispatch(resumeSession());
       setSessionCheck(true);
     }
-  })
-  
-  let chartStyle = { 
-    backgroundColor: "#FFFFFF", 
-    border: "none",
-    borderRadius: "2px",
-    boxShadow: "0 2px 10px 0 rgba(70, 76, 79, .2)",
-    margin:"20px auto 20px auto"
-  };
+  });
 
   return (
-      <div className="container-fluid d-flex flex-column align-items-stretch justify-content-center text-center vh-100 p-5">
-        <h1 className="mb-5">Welcome to EBWA</h1>
-        <p className="fs-4">
-          If this is your first time here, please claim your account.
-        </p>
-        <Link to="/f/auth/createaccount" className="btn btn-info mt-2 align-self-center">
-          Claim Account
-        </Link>
-        <hr className="my-3" />
-        <h1 className="mt-4">Already Have an account?</h1>
-        <Link to="/f/auth/login" className="btn btn-info mt-2 align-self-center">
-          LogIn
-        </Link>
-        <h3 className="mt-5">Users who have actived their accounts</h3>
-        <iframe style={chartStyle} width="320" height="240" src="https://charts.mongodb.com/charts-project-0-xksgk/embed/charts?id=25ea2996-39b1-401c-8782-12ffc2adf43b&theme=light"/>
-      </div>
+    
+      <Grid container direction="column" spacing={2}>
+        <Grid item xs={12}>
+          <Box p={2}>
+            <Grid container direction="column">
+              <Grid item>
+                <Typography variant="h4">Welcome to</Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant="h3">
+                  <b>Expat Buyer's Welfare Association</b>
+                </Typography>
+              </Grid>
+            </Grid>
+          </Box>
+          <Divider/>
+        </Grid>
+                
+
+        <Grid item xs={12} container direction="row" spacing={2} justify="center" alignItems="stretch">
+          <Grid item xs={12} sm={6}>
+            <Paper className={classes.paper}>
+              <Box p={2}>
+                <Typography variant="h5" gutterBottom>
+                  <b>First time here?</b>
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  If this is your first time here, you will have to claim your
+                  account. If you have submitted all your documents, then your
+                  email is already registered with us. Just click the link below
+                  an we shall mail you the login credentials.
+                </Typography>
+                <Box mt={4}>
+                  <ButtonLink to="/f/auth/createaccount">
+                    Claim Account
+                  </ButtonLink>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <Paper className={classes.paper}>
+              <Box p={2}>
+                <Typography variant="h5" gutterBottom>
+                  <b>Already Have an account?</b>
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  If this is your first time here, you will have to claim your
+                  account. If you have submitted all your documents, then your
+                  email is already registered with us. Just click the link below
+                  an we shall mail you the login credentials.
+                </Typography>
+                <Box mt={4}>
+                  <ButtonLink to="/f/auth/login">LogIn</ButtonLink>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Grid>
   );
 }
 

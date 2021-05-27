@@ -1,18 +1,35 @@
-import React from "react";
+import { Typography, Grid, Box, Collapse } from "@material-ui/core";
+import React, {useState} from "react";
 import LoginModule from "./LoginModule";
+import {Alert} from '@material-ui/lab'
 
 function InvalidPassword() {
   return (
-    <div className="container-fluid d-flex flex-column align-items-stretch justify-content-center text-center vh-100 p-5 ">
-      <h1 className="mb-5">Invalid Password</h1>
-      <p className="fs-4 px-4">
-        Sorry, we couldn't validate your password, please check if you have
-        typed it correctly. If you have forgotten it please request a new
-        password.
-      </p>
-     <LoginModule/> 
-    </div>
+    <Grid container alignContent="center" direction="column" spacing={2}>
+      <Grid item xs={12} md={8}>
+        <Typography variant="h4" gutterBottom>
+          <b>Invalid Password</b>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          Sorry, we couldn't validate your password, please check if you have
+          typed it correctly. If you have forgotten it please request a new
+          password.
+        </Typography>
+      </Grid>
+      <Grid item xs={12} md={8}>
+        <LoginModule />
+      </Grid>
+    </Grid>
   );
+}
+
+function ErrorDisplay() {
+  let [close, setClose] = useState(true);
+  return (
+    <Collapse in={close}>
+      <Alert onClose={()=>{}}severity="error">This is an error alert — check it out!</Alert>
+    </Collapse>
+  )
 }
 
 export default InvalidPassword;

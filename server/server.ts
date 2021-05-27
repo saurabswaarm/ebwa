@@ -1,22 +1,21 @@
-if(process.env.BUILD == "development"){
+if (process.env.BUILD == "development") {
   console.log('Development Environment');
   require('dotenv').config();
 }
 
 // import fs from 'fs';
-// import http from 'http';
+import http from 'http';
 // import https from 'https';
 import path from 'path';
 import express from 'express';
 let app = express();
-import cors from 'cors';
 import flash from 'express-flash';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import mongoStore from 'connect-mongo';
-let MongoStore = mongoStore(session);
-import {errorHandler, EbwaError} from './middleware/errorHandler';
+
+import { errorHandler, EbwaError } from './middleware/errorHandler';
 
 // 🔶 Routes 🔶
 // 
@@ -26,26 +25,23 @@ import postsApiRouter from './routes/postApi';
 // import {init} from './logger';
 // init();
 
-
-
-
-import mongoose from 'mongoose';
-import User from './schema/userSchema';
-mongoose.connect(process.env.DBURI!, {useNewUrlParser: true, useUnifiedTopology: true});
+import mongoose from 'mongoose'
+mongoose.connect(process.env.DBURI!, { useNewUrlParser: true, useUnifiedTopology: true });
 const mdb = mongoose.connection;
-    mdb.on('error', console.error.bind(console, 'connection error:'));
-    mdb.once('open', function() {
-      console.log('mongodb is connected');
-    });
+mdb.on('error', console.error.bind(console, 'connection error:'));
+mdb.once('open', function () {
+  console.log('mongodb is connected');
+});
 
-
-import passportInit from './lib/auth'
+import passportInit from './lib/auth';
+import User from './schema/userSchema';
 passportInit(passport, User);
 
-if(process.env.BUILD == "development"){
+if (process.env.BUILD == "development") {
+  let cors = require('cors');
   var corsOptions = {
     origin: 'http://localhost:3000',
-    credentials:true,
+    credentials: true,
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
   }
   app.use(cors(corsOptions))
@@ -55,15 +51,16 @@ app.use(express.static(path.join(__dirname, "..", "build")));
 app.use(express.json());
 app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(flash());
-app.use(express.urlencoded({extended:false}));
+app.use(express.urlencoded({ extended: false }));
+let MongoStore = mongoStore(session);
 app.use(session({
-  name:'session-ebwa',
+  name: 'session-ebwa',
   secret: process.env.SESSION_SECRET!,
   resave: false,
-  rolling:false,
+  rolling: false,
   saveUninitialized: false,
-  store:new MongoStore({mongooseConnection:mongoose.connection}),
-  cookie: { path: '/', httpOnly: true, secure: false, maxAge: 60000000}
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+  cookie: { path: '/', httpOnly: true, secure: false, maxAge: 60000000 }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -74,15 +71,15 @@ app.use('/api/auth', authApiRouter);
 app.use('/api/posts', postsApiRouter)
 
 
-app.get('/', function (req:express.Request, res:express.Response) {
+app.get('/', function (req: express.Request, res: express.Response) {
   res.redirect('/f/');
 });
 
-app.get('/f/*', function (req:express.Request, res:express.Response) {
+app.get('/f/*', function (req: express.Request, res: express.Response) {
   res.sendFile(path.join(__dirname, "..", 'build', 'index.html'));
 });
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(new EbwaError('Page Not Found', 404, 404));
 });
 
@@ -95,14 +92,14 @@ app.use(errorHandler);
 // let certificate = fs.readFileSync(path.join(__dirname,"..", "certs","cert.pem"));
 // let credentials = {key:privateKey, cert:certificate, passphrase: 'YOUR PASSPHRASE HERE' } as http.ServerOptions;
 
-// let httpServer = http.createServer(app);
+let httpServer = http.createServer(app);
 // let httpsServer = https.createServer(credentials, app);
 
 
 // start express server on port 5000
-app.listen(process.env.PORTNO, () => {
+httpServer.listen(process.env.PORTNO, () => {
   console.log("server started on port " + process.env.PORTNO);
-}); 
+});
 
 // httpServer.listen(process.env.PORTNO, ()=>{
 //   console.log("http server started on port " + process.env.PORTNO);

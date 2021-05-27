@@ -1,15 +1,15 @@
-import { SET_USER_ERR, SET_USER, REMOVE_USER, SET_NOTICEBOARD, REMOVE_NOTICEBOARD, SET_NOTICEBOARD_ERR } from './actionTypes';
-import { UserCredentials, IUserF, AuthError, AuthResponse } from '../../types/authTypes';
+import { SET_USER_ERR, SET_USER, REMOVE_USER, SET_NOTICEBOARD, REMOVE_NOTICEBOARD, SET_NOTICEBOARD_ERR, REMOVE_USER_ERR, REMOVE_NOTICEBOARD_ERR } from './actionTypes';
+import { UserCredentials, IUserF, AuthResponse } from '../../types/authTypes';
+import {Error} from '../../types/serverResponseTypes'
 import { Store, Action, Dispatch, AnyAction } from 'redux';
 import { config } from '../config';
 import { ThunkDispatch } from 'redux-thunk';
-import { AppState } from '../../types/stateTypes';
+import { AppState } from '../../types/reduxTypes';
 import { IPost } from '../../types/postTypes';
 import qs from 'qs';
 
 
-
-export const logInUser = function (credentialsObject: UserCredentials) {
+export const logInUser = function (credentialsObject: UserCredentials, callBack:Function) {
     return async function (dispatch: ThunkDispatch<AppState, void, Action>, getState: Store['getState']) {
         try {
             let response: Response = await fetch(
@@ -29,8 +29,10 @@ export const logInUser = function (credentialsObject: UserCredentials) {
             if (responseJson.code == 2) {
                 dispatch(setUser(responseJson.payload.user));
                 dispatch(getNoticeBoard());
+                callBack(true);
             } else {
-                dispatch(setUserErr(responseJson.payload))
+                dispatch(setUserErr(responseJson));
+                callBack(false)
             }
         } catch (err) {
             console.log(err);
@@ -106,7 +108,7 @@ export const setUser = function (userObject: IUserF) {
     }
 }
 
-export const setUserErr: (arg0: AuthError) => Action = function (authError: AuthError) {
+export const setUserErr = function (authError: Error) {
     console.log(authError);
     return {
         type: SET_USER_ERR,
@@ -115,6 +117,13 @@ export const setUserErr: (arg0: AuthError) => Action = function (authError: Auth
             status: authError.payload.status,
             message: authError.payload.message
         }
+    }
+}
+
+export const removeUserErr = function() {
+    return {
+        type: REMOVE_USER_ERR,
+        payload: null
     }
 }
 
@@ -143,6 +152,13 @@ export const setNoticeBoardError = function (err: any) {
     return {
         type: SET_NOTICEBOARD_ERR,
         payload: err
+    }
+}
+
+export const removeNoticeBoardError = function () {
+    return {
+        type: REMOVE_NOTICEBOARD_ERR,
+        payload: null
     }
 }
 

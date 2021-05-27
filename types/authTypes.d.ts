@@ -1,4 +1,5 @@
-import {Document, Model} from 'mongoose';
+import { Document, Model } from 'mongoose';
+import { ServerResponse } from './serverResponseTypes';
 
 export interface UserCredentials {
     email: string,
@@ -49,19 +50,6 @@ export interface IUserD extends Document {
 export interface IUserM extends Model<IUserD, {}> {
     getUserByEmail:Function,
     getUserById:Function
-}
-
-export interface ServerResponse {
-    code:number,
-    payload:object
-}
-
-export interface AuthError extends ServerResponse {
-    payload: {
-        status: number,
-        message: string,
-        redirect: string
-    }
 }
 
 export interface AuthResponse extends ServerResponse {

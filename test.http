@@ -40,3 +40,16 @@ Content-Type: application/json
 
 GET http://localhost:3006/api/auth/resumesession
 Content-Type: application/json
+
+
+###
+
+POST http://localhost:3006/api/auth/adduser
+Content-Type: application/json
+
+{
+    "cid": "fg",
+    "email": "tsdsd@email.com",
+    "name": "sdsdsd",
+    "phone": "34343434"
+}

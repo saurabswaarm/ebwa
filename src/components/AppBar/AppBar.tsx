@@ -1,13 +1,52 @@
-import React, { useEffect } from "react";
+import React, { Props, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
+import { LocationDescriptor, Location } from "history";
+import {
+  Link as RouterLink,
+  LinkProps,
+  useHistory,
+  useParams,
+  useLocation,
+} from "react-router-dom";
 import { logOutUser } from "../../redux/actions";
 import { getUserFromState } from "../../redux/selectors";
 
-function AppBar() {
+//material ui
+import {
+  Drawer,
+  Button,
+  List,
+  Divider,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core/";
+import { makeStyles, Theme } from "@material-ui/core/styles";
+import { AppBar, Toolbar, IconButton, Typography } from "@material-ui/core";
+import { Menu as MenuIcon } from "@material-ui/icons";
+import ListItemLink from '../WrappedComponents/ListItemLink';
+
+const useStyles = makeStyles((theme) => ({
+  grow: {
+    flexGrow: 1,
+  },
+  appBarTitle: {
+    color: "white",
+    textDecoration: "none",
+  },
+  menuItemLink: {
+    textDecoration: "none",
+  }
+}));
+
+
+
+function AppBarX() {
   const dispatch = useDispatch();
   const user = useSelector(getUserFromState);
   let history = useHistory();
+  const classes = useStyles();
+  let [drawerState, setDrawerState] = useState(false);
 
   function handleLogOut(e: React.SyntheticEvent) {
     document.getElementById("nav-toggle-toggle")?.click();
@@ -16,63 +55,54 @@ function AppBar() {
     console.log(history);
   }
 
+  function toggleDrawer(e: React.SyntheticEvent) {
+    setDrawerState(!drawerState);
+  }
 
   let loggedInOptions = (
     <>
-      <li className="nav-item">
-        <span
-          className="nav-link active"
-          aria-current="page"
-          onClick={handleLogOut}
-        >
-          Log Out
-        </span>
-      </li>
-      <li className="nav-item" onClick={()=>(document.getElementById("nav-toggle-toggle")!.click())}>
-        <Link className="nav-link" to="/f/auth/changepassword">
-          Change Password
-        </Link>
-      </li>
+        <ListItemLink primary="Log Out" to="#" onClick={handleLogOut}/>
+        <ListItemLink primary="Change Password" to="/f/auth/changepassword" />
     </>
   );
 
-  let loggedOutOptions =(
+  let loggedOutOptions = (
     <>
-     <li className="nav-item" onClick={()=>(document.getElementById("nav-toggle-toggle")!.click())}>
-        <Link className="nav-link" to="/f/auth/login" >
-          Log In
-        </Link>
-      </li> 
+        <ListItemLink primary="Log In" to="/f/auth/login" />
     </>
-  )
+  );
 
   return (
-    <nav className="navbar navbar-dark bg-dark" >
-      <div className="container-fluid">
-        <Link className="navbar-brand" to="/">
-          EBWA
-        </Link>
-        <div className="text-light">{user.name}</div>
-        <button
-          id="nav-toggle-toggle"
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
+    <AppBar position="relative">
+      <Toolbar>
+        <Typography variant="h6">
+          <RouterLink
+            color="secondary"
+            to="/"
+            className={`${classes.appBarTitle}`}
+          >
+            EBWA
+          </RouterLink>
+        </Typography>
+        <div className={classes.grow}></div>
+        <IconButton edge="end" color="inherit" onClick={toggleDrawer}>
+          <MenuIcon />
+        </IconButton>
+        <Drawer
+          anchor="right"
+          variant="temporary"
+          open={drawerState}
+          onClose={toggleDrawer}
         >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav">
-            {user ? loggedInOptions : loggedOutOptions }
-          </ul>
-        </div>
-      </div>
-    </nav>
+          <List onClick={toggleDrawer}>
+            <ListItem><ListItemText primary="Menu"/></ListItem>
+            <Divider/>
+            {user ? loggedInOptions : loggedOutOptions}
+          </List>
+        </Drawer>
+      </Toolbar>
+    </AppBar>
   );
 }
 
-export default AppBar;
+export default AppBarX;

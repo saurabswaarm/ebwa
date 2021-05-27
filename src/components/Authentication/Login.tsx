@@ -1,17 +1,26 @@
-import React from "react";
 import LoginModule from "./LoginModule";
+import {Typography, Paper, Box, Grid} from '@material-ui/core';
 
 function Login() {
   return (
-    <div className="container-fluid d-flex flex-column align-items-stretch justify-content-center text-center vh-100 p-5 ">
-      <h1 className="mb-5">Log In to EBWA portal</h1>
-      <p className="fs-4 px-4">
-        If this is you first login, please check your email, you will find a
-        username and password, that is specific to you. Please do not share that
-        with anyone.
-      </p>
-      <LoginModule/>
-    </div>
+    <Grid container justify="center">
+      <Grid item xs={11} md={8}>
+      <Paper >
+      <Box p={3} mx="auto">
+        <Typography variant="h4" gutterBottom><b>Login to EBWA portal</b></Typography>
+        <Typography variant="body1" gutterBottom>
+          If this is you first login, please check your email, you will find a
+          username and password, that is specific to you. Please do not share that
+          with anyone.
+        </Typography>
+        <Box mt={2}>
+          <LoginModule/>
+        </Box>
+      </Box>
+    </Paper>
+      </Grid>
+    </Grid>
+    
   );
 }
 
